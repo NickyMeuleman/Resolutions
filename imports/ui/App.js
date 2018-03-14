@@ -1,27 +1,59 @@
-import React from "react";
+import React, { Component } from "react";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 import ResolutionForm from "./ResolutionForm";
+import UpdateResolutionForm from "./UpdateResolutionForm";
 
-const App = ({ data }) => {
-  return (
-    !data.loading && (
-      <div>
-        <h1>{data.hi}</h1>
-        <ResolutionForm refetch={data.refetch} />
-        <ul>
-          {data.resolutions.map(resolution => (
-            <li key={resolution._id}>{resolution.name}</li>
-          ))}
-        </ul>
-      </div>
-    )
-  );
-};
+const deleteResolution = gql`
+  mutation deleteResolution($id: String!) {
+    deleteResolution(id: $id) {
+      _id
+      name
+    }
+  }
+`;
 
-const hiQuery = gql`
-  {
-    hi
+class App extends Component {
+  deleteHandler = id => {
+    this.props
+      .deleteResolution({ variables: { id: id.toString() } })
+      .then(result => {
+        console.log("delete result:", result);
+        this.props.refetch();
+        console.log(this.props.data);
+      })
+      .catch(error => console.log(error));
+  };
+
+  render() {
+    const { loading, resolutions, refetch } = this.props;
+    return (
+      !loading && (
+        <div>
+          <ResolutionForm />
+          <ul>
+            {resolutions.map(resolution => (
+              <React.Fragment key={resolution._id}>
+                <li>{resolution.name}</li>
+                <button
+                  onClick={() => {
+                    this.deleteHandler(resolution._id);
+                  }}
+                >
+                  Delete
+                </button>
+                <UpdateResolutionForm id={resolution._id} refetch={refetch} />
+              </React.Fragment>
+            ))}
+          </ul>
+        </div>
+      )
+    );
+  }
+}
+
+const resolutionsQuery = gql`
+  query resolutionsQuery {
     resolutions {
       _id
       name
@@ -29,4 +61,9 @@ const hiQuery = gql`
   }
 `;
 
-export default graphql(hiQuery)(App);
+export default compose(
+  graphql(resolutionsQuery, {
+    props: ({ data }) => ({ ...data })
+  }),
+  graphql(deleteResolution, { name: "deleteResolution" })
+)(App);
