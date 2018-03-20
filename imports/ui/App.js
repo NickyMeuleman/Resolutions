@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import ResolutionForm from "./ResolutionForm";
 import UpdateResolutionForm from "./UpdateResolutionForm";
+import RegisterForm from "./RegisterForm";
+import LoginForm from "./LoginForm";
 
 const deleteResolution = gql`
   mutation deleteResolution($id: String!) {
@@ -26,10 +28,25 @@ class App extends Component {
   };
 
   render() {
-    const { loading, resolutions, refetch } = this.props;
+    const { loading, resolutions, refetch, user } = this.props;
     return (
       !loading && (
         <div>
+          {user._id ? (
+            <button
+              onClick={() => {
+                Meteor.logout();
+                this.props.client.resetStore();
+              }}
+            >
+              Logout
+            </button>
+          ) : (
+            <React.Fragment>
+              <RegisterForm client={this.props.client} />
+              <LoginForm client={this.props.client} />
+            </React.Fragment>
+          )}
           <ResolutionForm />
           <ul>
             {resolutions.map(resolution => (
@@ -58,6 +75,9 @@ const resolutionsQuery = gql`
       _id
       name
     }
+    user {
+      _id
+    }
   }
 `;
 
@@ -66,4 +86,4 @@ export default compose(
     props: ({ data }) => ({ ...data })
   }),
   graphql(deleteResolution, { name: "deleteResolution" })
-)(App);
+)(withApollo(App));

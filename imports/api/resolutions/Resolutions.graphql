@@ -11,4 +11,5 @@ type Mutation {
 type Resolution {
   _id: String!
   name: String!
+  userId: String
 }
