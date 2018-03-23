@@ -1,4 +1,5 @@
 import Resolutions from "./resolutions";
+import Goals from "../goals/goals";
 
 export default {
   Query: {
@@ -8,6 +9,14 @@ export default {
       return Resolutions.find({ userId }).fetch();
     }
   },
+
+  Resolution: {
+    goals: resolution => {
+      console.log("resolution resolver:", resolution);
+      return Goals.find({ resolutionId: resolution._id }).fetch();
+    }
+  },
+
   Mutation: {
     async createResolution(obj, args, context) {
       console.log("create resolution mutation resolver");

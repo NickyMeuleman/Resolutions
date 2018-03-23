@@ -21,6 +21,7 @@ class UpdateResolutionForm extends Component {
         }
       })
       .then(result => {
+        this.name.value = "";
         console.log("EditResolutionForm:", result);
         this.props.refetch();
       })
@@ -31,7 +32,7 @@ class UpdateResolutionForm extends Component {
     return (
       <div>
         <input type="text" ref={input => (this.name = input)} />
-        <button onClick={this.submitForm}>Submit</button>
+        <button onClick={this.submitForm}>Edit Resolution</button>
       </div>
     );
   }

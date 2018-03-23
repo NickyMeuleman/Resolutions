@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import gql from "graphql-tag";
 import { graphql, compose, withApollo } from "react-apollo";
 import ResolutionForm from "./ResolutionForm";
+import GoalForm from "./GoalForm";
 import UpdateResolutionForm from "./UpdateResolutionForm";
 import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
+import Goal from "./resolutions/Goal";
 
 const deleteResolution = gql`
   mutation deleteResolution($id: String!) {
@@ -52,6 +54,11 @@ class App extends Component {
             {resolutions.map(resolution => (
               <React.Fragment key={resolution._id}>
                 <li>{resolution.name}</li>
+                <ul>
+                  {resolution.goals.map(goal => (
+                    <Goal goal={goal} key={goal._id} />
+                  ))}
+                </ul>
                 <button
                   onClick={() => {
                     this.deleteHandler(resolution._id);
@@ -60,6 +67,7 @@ class App extends Component {
                   Delete
                 </button>
                 <UpdateResolutionForm id={resolution._id} refetch={refetch} />
+                <GoalForm resolutionId={resolution._id} />
               </React.Fragment>
             ))}
           </ul>
@@ -74,6 +82,11 @@ const resolutionsQuery = gql`
     resolutions {
       _id
       name
+      goals {
+        _id
+        name
+        completed
+      }
     }
     user {
       _id

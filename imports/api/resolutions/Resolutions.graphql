@@ -12,4 +12,5 @@ type Resolution {
   _id: String!
   name: String!
   userId: String
+  goals: [Goal]
 }
