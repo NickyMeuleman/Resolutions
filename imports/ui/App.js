@@ -4,9 +4,9 @@ import { graphql, compose, withApollo } from "react-apollo";
 import ResolutionForm from "./ResolutionForm";
 import GoalForm from "./GoalForm";
 import UpdateResolutionForm from "./UpdateResolutionForm";
-import RegisterForm from "./RegisterForm";
-import LoginForm from "./LoginForm";
+
 import Goal from "./resolutions/Goal";
+import UserForm from "./UserForm";
 
 const deleteResolution = gql`
   mutation deleteResolution($id: String!) {
@@ -30,57 +30,50 @@ class App extends Component {
   };
 
   render() {
-    const { loading, resolutions, refetch, user } = this.props;
+    const { loading, resolutions, refetch, user, client } = this.props;
     return (
       !loading && (
         <div>
-          {user._id ? (
-            <button
-              onClick={() => {
-                Meteor.logout();
-                this.props.client.resetStore();
-              }}
-            >
-              Logout
-            </button>
-          ) : (
+          <UserForm user={user} client={client} />
+          {user._id && (
             <React.Fragment>
-              <RegisterForm client={this.props.client} />
-              <LoginForm client={this.props.client} />
+              <ResolutionForm />
+              <ul>
+                {resolutions.map(resolution => (
+                  <React.Fragment key={resolution._id}>
+                    <li>
+                      <span
+                        style={{
+                          textDecoration: resolution.completed
+                            ? "line-through"
+                            : "none"
+                        }}
+                      >
+                        {resolution.name}
+                      </span>
+                    </li>
+                    <ul>
+                      {resolution.goals.map(goal => (
+                        <Goal goal={goal} key={goal._id} />
+                      ))}
+                    </ul>
+                    <button
+                      onClick={() => {
+                        this.deleteHandler(resolution._id);
+                      }}
+                    >
+                      Delete
+                    </button>
+                    <UpdateResolutionForm
+                      id={resolution._id}
+                      refetch={refetch}
+                    />
+                    <GoalForm resolutionId={resolution._id} />
+                  </React.Fragment>
+                ))}
+              </ul>
             </React.Fragment>
           )}
-          <ResolutionForm />
-          <ul>
-            {resolutions.map(resolution => (
-              <React.Fragment key={resolution._id}>
-                <li>
-                  <span
-                    style={{
-                      textDecoration: resolution.completed
-                        ? "line-through"
-                        : "none"
-                    }}
-                  >
-                    {resolution.name}
-                  </span>
-                </li>
-                <ul>
-                  {resolution.goals.map(goal => (
-                    <Goal goal={goal} key={goal._id} />
-                  ))}
-                </ul>
-                <button
-                  onClick={() => {
-                    this.deleteHandler(resolution._id);
-                  }}
-                >
-                  Delete
-                </button>
-                <UpdateResolutionForm id={resolution._id} refetch={refetch} />
-                <GoalForm resolutionId={resolution._id} />
-              </React.Fragment>
-            ))}
-          </ul>
         </div>
       )
     );

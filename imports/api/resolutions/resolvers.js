@@ -28,11 +28,14 @@ export default {
     async createResolution(obj, args, context) {
       console.log("create resolution mutation resolver");
       console.log("server side:", args);
-      const resolutionId = await Resolutions.insert({
-        name: args.name,
-        userId: context.userId
-      });
-      return Resolutions.findOne(resolutionId);
+      if (context.userId) {
+        const resolutionId = await Resolutions.insert({
+          name: args.name,
+          userId: context.userId
+        });
+        return Resolutions.findOne(resolutionId);
+      }
+      throw new Error("Unauthorized");
     },
     async deleteResolution(obj, args, context) {
       console.log("delete resolution mutation resolver");

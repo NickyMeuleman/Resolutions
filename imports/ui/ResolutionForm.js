@@ -12,6 +12,9 @@ const createResolution = gql`
 `;
 
 class ResolutionForm extends Component {
+  state = {
+    error: null
+  };
   submitForm = () => {
     console.log("client side:", this.name.value);
     this.props
@@ -22,10 +25,11 @@ class ResolutionForm extends Component {
       })
       .then(result => {
         this.name.value = "";
+        this.setState({ error: null });
         console.log("resolutionForm:", result);
         // this.props.refetch();
       })
-      .catch(error => console.log(error));
+      .catch(error => this.setState({ error: error.message }));
   };
 
   render() {
@@ -33,6 +37,14 @@ class ResolutionForm extends Component {
       <div>
         <input type="text" ref={input => (this.name = input)} />
         <button onClick={this.submitForm}>Submit Resolution</button>
+        {this.state.error && (
+          <p
+            style={{ color: "red", cursor: "pointer" }}
+            onClick={() => this.setState({ error: null })}
+          >
+            {this.state.error}
+          </p>
+        )}
       </div>
     );
   }

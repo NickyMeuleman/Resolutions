@@ -3,7 +3,7 @@ import { makeExecutableSchema } from "graphql-tools";
 import { mergeTypes } from "merge-graphql-schemas";
 import merge from "lodash/merge";
 
-//dsdsdssffgddf
+//dsdsdssffgddff
 
 import ResolutionsSchema from "../../api/resolutions/Resolutions.graphql";
 import ResolutionsResolvers from "../../api/resolutions/resolvers";
