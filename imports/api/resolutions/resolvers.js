@@ -14,6 +14,13 @@ export default {
     goals: resolution => {
       console.log("resolution resolver:", resolution);
       return Goals.find({ resolutionId: resolution._id }).fetch();
+    },
+    completed: resolution => {
+      const goals = Goals.find({ resolutionId: resolution._id }).fetch();
+      if (goals.length > 0) {
+        return goals.every(goal => goal.completed);
+      }
+      return false;
     }
   },
 

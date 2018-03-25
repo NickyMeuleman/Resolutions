@@ -13,4 +13,5 @@ type Resolution {
   name: String!
   userId: String
   goals: [Goal]
+  completed: Boolean
 }

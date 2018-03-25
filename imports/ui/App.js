@@ -53,7 +53,17 @@ class App extends Component {
           <ul>
             {resolutions.map(resolution => (
               <React.Fragment key={resolution._id}>
-                <li>{resolution.name}</li>
+                <li>
+                  <span
+                    style={{
+                      textDecoration: resolution.completed
+                        ? "line-through"
+                        : "none"
+                    }}
+                  >
+                    {resolution.name}
+                  </span>
+                </li>
                 <ul>
                   {resolution.goals.map(goal => (
                     <Goal goal={goal} key={goal._id} />
@@ -82,6 +92,7 @@ const resolutionsQuery = gql`
     resolutions {
       _id
       name
+      completed
       goals {
         _id
         name
